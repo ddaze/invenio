@@ -1,0 +1,16 @@
+diff --git a/serve_new.py b/serve.py
+index c640a6f..f54b792 100644
+--- a/serve_new.py
++++ b/serve.py
+@@ -354,7 +354,10 @@ def start_reloading_server(options, ssl_context=None):
+     reloader = None
+     # Create a new process group
+     # Used for cleanup when quiting
+-    os.setpgrp()
++    try:
++        os.setpgrp()
++    except Exception:
++        print("os.setpgrp error")
+     try:
+         reloader = Reloader(options, server_socket)
+

@@ -1,0 +1,81 @@
+
+CFG_WEBCOMMENT_ALERT_ENGINE_EMAIL = $CFG_EMAIL
+CFG_WEBCOMMENT_DEFAULT_MODERATOR = $CFG_EMAIL
+CFG_WEBALERT_ALERT_ENGINE_EMAIL = $CFG_EMAIL
+CFG_WEBCOMMENT_EMAIL_REPLIES_TO = {
+         'ATLAS Cosmics Plots': ['506__d', '506__m', '859__f'],
+         'ATLAS Physics Plots': ['506__d', '506__m', '859__f'],
+         'ATLAS Results Plots': ['506__d', '506__m', '859__f'],
+         'ATLAS Plots': ['506__d', '506__m', '859__f'],
+         'ATLAS Upgrade Plots': ['506__d', '506__m', '859__f'],
+         'ATLAS Tile Calorimeter Detector Unit Plots': ['506__d', '506__m', '859__f'],
+         'ATLAS Muon Plots': ['506__d', '506__m', '859__f'],
+         'ATLAS Magnets Plots': ['506__d', '506__m', '859__f'],
+         'ATLAS Communications': ['859__f'],
+         'Weekly Bulletin': ['906__m'],
+        }
+CFG_WEBCOMMENT_RESTRICTION_DATAFIELD = {
+        'Articles': '5061_a',
+         'Pictures': '5061_a',
+         'Theses': '5061_a',
+         'Experiment Publication Drafts': '5061_a',
+        }
+CFG_WEBCOMMENT_ROUND_DATAFIELD = {
+        'Articles': '562__c',
+        'Pictures': '562__c',
+        'Experiment Publication Drafts': '562__c',
+        }
+CFG_WEBCOMMENT_MAX_ATTACHMENT_SIZE = 5242880
+CFG_WEBCOMMENT_MAX_ATTACHED_FILES = 5
+CFG_WEBCOMMENT_MAX_COMMENT_THREAD_DEPTH = 1
+
+CFG_SITE_NAME = CERN Document Server
+CFG_SITE_NAME_INTL_en = CERN Document Server
+CFG_SITE_NAME_INTL_fr = CERN Document Server
+CFG_SITE_NAME_INTL_de = CERN Document Server
+CFG_SITE_NAME_INTL_es = CERN Document Server
+CFG_SITE_NAME_INTL_ca = CERN Document Server
+CFG_SITE_NAME_INTL_pt = CERN Document Server
+CFG_SITE_NAME_INTL_it = CERN Document Server
+CFG_SITE_NAME_INTL_ru = CERN Document Server
+CFG_SITE_NAME_INTL_sk = CERN Document Server
+CFG_SITE_NAME_INTL_no = CERN Document Server
+CFG_SITE_NAME_INTL_sv = CERN Document Server
+CFG_SITE_NAME_INTL_el = CERN Document Server
+CFG_SITE_NAME_INTL_ja = CERN Document Server
+CFG_SITE_NAME_INTL_pl = CERN Document Server
+CFG_SITE_NAME_INTL_bg = CERN Document Server
+CFG_SITE_NAME_INTL_hr = CERN Document Server
+CFG_SITE_NAME_INTL_zh_CN = CERN Document Server
+CFG_SITE_NAME_INTL_zh_TW = CERN Document Server
+CFG_SITE_NAME_INTL_ka = CERN Document Server
+
+CFG_SITE_LANGS = bg,ca,de,el,en,es,fr,hr,it,ja,ka,no,pl,pt,ru,sk,sv,zh_CN,zh_TW
+
+CFG_CERN_SITE = 0
+
+CFG_DEVEL_SITE = 0
+
+CFG_WEBSTYLE_TEMPLATE_SKIN = cern
+CFG_WEBSEARCH_USE_MATHJAX_FOR_FORMATS = hb,hd
+CFG_WEBCOMMENT_USE_RICH_TEXT_EDITOR = True
+CFG_WEBBASKET_USE_RICH_TEXT_EDITOR = False
+
+CFG_BIBRANK_SHOW_READING_STATS = 0
+CFG_BIBRANK_SHOW_DOWNLOAD_STATS = 0
+CFG_BIBRANK_SHOW_DOWNLOAD_GRAPHS = 0
+CFG_BIBRANK_SHOW_CITATION_LINKS = 0
+CFG_BIBRANK_SHOW_CITATION_STATS = 0
+CFG_BIBRANK_SHOW_CITATION_GRAPHS = 0
+
+CFG_BIBDOCFILE_FILESYSTEM_BIBDOC_GROUP_LIMIT = 10000
+CFG_WEBALERT_MAX_NUM_OF_RECORDS_IN_ALERT_EMAIL = 100
+CFG_APACHE_PASSWORD_FILE = $CFG_INVENIO_PREFIX/etc/webaccess/httpd.password
+CFG_APACHE_GROUP_FILE = $CFG_INVENIO_PREFIX/etc/webaccess/httpd.group
+CFG_WEBSESSION_DIFFERENTIATE_BETWEEN_GUESTS = 0
+CFG_BIBSCHED_LOG_PAGER = /usr/bin/less
+
+CFG_WEBSEARCH_ENABLE_OPENGRAPH = True
+CFG_WEBSUBMIT_USE_MATHJAX = 1
+CFG_WEBLINKBACK_TRACKBACK_ENABLED = 1
+
