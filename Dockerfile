@@ -85,18 +85,21 @@ RUN "$virtenv"/bin/pip install --upgrade distribute \
 RUN useradd -m -u 1000 apache \
     && echo "export PATH+=:/src/invenio-devscripts" >> $(getent passwd apache | cut -f6 -d:)/.bashrc \
     && echo "export PATH+=:/opt/invenio/bin" >>  $(getent passwd apache | cut -f6 -d:)/.bashrc \
-    && echo "alias ll='ls -alF'" >>  $(getent passwd apache | cut -f6 -d:)/.bashrc
+    && echo "alias ll='ls -alF'" >>  $(getent passwd apache | cut -f6 -d:)/.bashrc \
+    && echo "source '$virtenv'/bin/activate " >>  $(getent passwd apache | cut -f6 -d:)/.bashrc \
+    && echo "apache ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 
 ADD docker/serve.patch /tmp/
 # Creating Python symlink:
 RUN mkdir -p /opt/invenio/lib/python/invenio \
     && ln -s /opt/invenio/lib/python/invenio /opt/virtenv/lib/python2.7/site-packages/ \
-    && patch -t /opt/virtenv/local/lib/python2.7/site-packages/invenio_devserver/serve.py < /tmp/serve.patch
+    && patch -t /opt/virtenv/local/lib/python2.7/site-packages/invenio_devserver/serve.py < /tmp/serve.patch \
 #    && ln -s /opt/invenio/lib/python/invenio /opt/virtenv/local/lib/python2.7/site-packages/
-#    && chown -R apache.apache /opt/invenio \
+    && chown -R apache:apache /opt/invenio \
+    && chown -R apache:apache $virtenv
 #    && mkdir /.texmf-var \
 #    && chown apache /.texmf-var
-
 
 
 # Adding current directory as `/code`; assuming people have `master` branch checked out:
@@ -109,7 +112,7 @@ ADD create-config /
 ADD docker/invenio-local_cds.template /tmp/
 ADD docker/invenio-local.template /tmp/
 # Starting the application:
-#USER apache
+USER apache
 #VOLUME['/src']
 #VOLUME['/opt/invenio']
 ENTRYPOINT ["/docker-entrypoint.sh"]

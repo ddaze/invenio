@@ -21,7 +21,7 @@ CFG_INVENIO_PORT_HTTP=${CFG_INVENIO_PORT_HTTP:=$CFG_PORT}
 export CFG_INVENIO_PORT_HTTP # TODO: fix port in config
 CFG_INVENIO_PORT_HTTPS=${CFG_INVENIO_PORT_HTTPS:=443}
 export CFG_INVENIO_PORT_HTTPS
-CFG_INVENIO_USER=${CFG_INVENIO_USER:=root}
+CFG_INVENIO_USER=${CFG_INVENIO_USER:=apache}
 export CFG_INVENIO_USER
 CFG_INVENIO_ADMIN=${CFG_INVENIO_ADMIN:=$CFG_EMAIL}
 export CFG_INVENIO_ADMIN
@@ -32,9 +32,10 @@ export CFG_INVENIO_DATABASE_USER
 CFG_INVENIO_DATABASE_PASS=${CFG_INVENIO_DATABASE_PASS:=$DB_ENV_MYSQL_PASSWORD}
 export CFG_INVENIO_DATABASE_PASS
 
+ENV_PATH="/opt/virtenv/bin/"
 
 function virtenv() {
-    source /opt/virtenv/bin/activate
+    source "$ENV_PATH"activate
 }
 
 function wait_db() {
@@ -82,13 +83,12 @@ function create_db() {
 
 function compile_invenio() {
     echo "Compile Invenio from /src/invenio"
-    chown apache -R /opt/invenio
-
-    ENV_PATH="/opt/virtenv/bin/"
+    # chown apache -R /opt/invenio
 
     cd /src/invenio
     "$ENV_PATH"pip install -r requirements.txt || true
     "$ENV_PATH"pip install -r requirements-extras.txt || true
+
     rm -rf autom4te.cache
     aclocal
     automake -a
@@ -97,11 +97,14 @@ function compile_invenio() {
     make -s clean
     make -s
     make -s install
-    make -s install-jquery-plugins
-    make -s install-mathjax-plugin
-    make -s install-ckeditor-plugin
-    make -s install-mediaelement
-    make -s install-pdfa-helper-files
+    if [ -z "$MAKE_FAST" ]; then
+        echo "MAKE ADDITIONAL INSTALLATION"
+        make -s install-jquery-plugins
+        make -s install-mathjax-plugin
+        make -s install-ckeditor-plugin
+        make -s install-mediaelement
+        make -s install-pdfa-helper-files
+    fi
     mkdir -p /opt/invenio/var/tmp/ooffice-tmp-files
     chmod -R 775 /opt/invenio/var/tmp/ooffice-tmp-files
 
@@ -148,27 +151,47 @@ function check_collections() {
 
 # patch -t /usr/local/lib/python2.7/dist-packages/invenio_devserver/serve.py < /tmp/serve.patch
 virtenv
+sudo chown -R apache.apache /opt/invenio
 
-if ! [ -d /opt/invenio/etc ]; then
-    echo "create opt"
+if ! [ -z "$TRAVIS" ];then
+    echo "chown apache /src/invenio"
+    sudo chown -R apache.apache /src/invenio
+fi
+
+GROUP_NR=`ls -dn /src/invenio | awk '{ print $4}'`
+if [ "$GROUP_NR" !=  "1000" ]; then
+    echo "/src/invenio group=$GROUP_NR"
+    echo "ERROR wrong user group"
+    exit 1
+    # sudo chown -R :apache /src/invenio
+    # sudo groupadd -fg $GROUP_NR invenio
+    # sudo adduser apache invenio
+    #sudo chmod g+rw /src/invenio -R
+fi
+
+
+if ! [ -d /opt/virtenv/lib/python2.7/site-packages/invenio ]; then
+    echo "Info: Create symlinks"
     mkdir -p /opt/invenio/lib/python/invenio
     ln -s /opt/invenio/lib/python/invenio /opt/virtenv/lib/python2.7/site-packages/
     ln -s /opt/invenio/lib/python/invenio /opt/virtenv/local/lib/python2.7/site-packages/
-    chown -R apache.apache /opt/invenio
+    # chown -R apache.apache /opt/invenio
 else
     echo "Use existing /opt/invenio"
 fi
 
-if ! [ -d /src/invenio/modules ]; then
-    echo "Copy src"
-    mkdir -p /src/invenio
-    cp -R /tmp/src/invenio /src
-    chown -R apache.apache /src/invenio
-else
-    echo "Use existing src"
-fi
+# TODO: What todo if no src found. Github? zip?
+# if ! [ -d /src/invenio/modules ]; then
+#     echo "Copy src"
+#     mkdir -p /src/invenio
+#     cp -R /tmp/src/invenio /src
+#     chown -R apache.apache /src/invenio
+# else
+#     echo "Use existing src"
+# fi
 
 if ! [ -f /src/invenio/docker/invenio-local.template ]; then
+    echo "INFO: Copy default invenio-local.template /src/invenio/docker/"
     mkdir -p /src/invenio/docker
     cp /tmp/invenio-local.template /src/invenio/docker/
     cp /tmp/invenio-local_cds.template /src/invenio/docker/
@@ -191,6 +214,7 @@ if [ "$1" = 'serve' ]; then
     exit
 
 elif [ "$1" = 'make' ]; then
+    virtenv
     echo "compile_invenio"
     compile_invenio
     echo "wait_db"
@@ -199,6 +223,8 @@ elif [ "$1" = 'make' ]; then
     config_invenio
     echo "create_db"
     create_db
+    echo "create config"
+    /opt/invenio/bin/inveniocfg --update-all
     echo "check_collections"
     check_collections
 
@@ -206,8 +232,16 @@ elif [ "$1" = 'make' ]; then
     echo "Redis Port: $REDIS_PORT"
     echo "IP: $(hostname --ip-address)"
 
-    /opt/invenio/bin/inveniocfg --update-all
     # exec sudo script -q -c "/bin/bash serve -s /src/invenio -o /opt/invenio"
+    exit
+elif [ "$1" = 'make_fast' ]; then
+    echo "compile_invenio FAST"
+    MAKE_FAST="MAKE FAST"
+    compile_invenio
+    echo "config_invenio"
+    config_invenio
+    /opt/invenio/bin/inveniocfg --update-all
+
     exit
 
 elif [ "$1" = 'newdb' ]; then
