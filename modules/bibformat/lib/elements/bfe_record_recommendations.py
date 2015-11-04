@@ -23,6 +23,8 @@
 * Based on Obelix recommendations and word similarity ranking
 """
 
+import re
+
 from invenio.config import CFG_OBELIX_HOST
 from invenio.messages import gettext_set_language
 
@@ -102,6 +104,12 @@ def format_element(bfo):
     """Create the HTML and JS code to display the recommended records."""
     if CFG_OBELIX_HOST == "":
         return ""
+    try:
+        re.search(r'/record/', bfo.user_info.get('uri')).group()
+    except AttributeError:
+        # No record url found
+        return ""
+
     _ = gettext_set_language(bfo.lang)
 
     url = "/record/" + str(bfo.recID) + "/recommendations"
