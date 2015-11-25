@@ -30,29 +30,24 @@ from invenio.messages import gettext_set_language
 
 
 html_script = """
-<div class="recommendations_content" style="display:none;"></div>
 <script>
 $( document ).ready(function() {
     $.getJSON("%(recommendations_url)s" , function( data ) {
-        var root = $( "div.recommendations_content" );
+        var root = $( "<div/>", {class: 'recommendations',
+                                 style: 'display:none;'})
         var records = data.items;
         var items = [];
         if (records.length === 0 ) {
-            if (data.loggedin === false) {
-                $( "<p/>", {class: 'recommendations_contents',
-                    text: "%(text_title)s:" }).appendTo(root);
-
-                $( "<p/>", {text: "%(text_login)s" }).appendTo(root);
-                $(root).fadeIn("Slow");
-            }
             return;
         }
 
-        $( "<p/>", {class: 'recommendations_contents',
-            text: "%(text_title)s:" }).appendTo(root);
+        var header = $( "<div/>", {class: 'recommendation_header'})
+                    .appendTo(root)
+        $( "<h3/>", {class: 'recommendations_contents',
+            text: "%(text_title)s:" }).appendTo(header);
         if (data.loggedin === false) {
             $( "<p/>", {class: 'recommendations_login',
-                text: "%(text_login)s" }).appendTo(root);
+                text: "%(text_login)s" }).appendTo(header);
         }
         var list = $( "<ul/>", {
             "class": "record_recommendation",
@@ -92,6 +87,7 @@ $( document ).ready(function() {
 
         });
         $(list).appendTo(root);
+        root.appendTo($("div.pagebodystripemiddle"))
         $(root).fadeIn("Slow");
     });
 
@@ -114,7 +110,7 @@ def format_element(bfo):
 
     url = "/record/" + str(bfo.recID) + "/recommendations"
     html = html_script % {'recommendations_url': url,
-                          'text_title': _("Recommended Records"),
+                          'text_title': _("You might also be interested in"),
                           'text_login': _(
                               "Please login for personalized recommendations"),
                           }
