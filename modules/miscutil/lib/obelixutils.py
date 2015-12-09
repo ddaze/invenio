@@ -117,6 +117,7 @@ def get_recommended_records(recid, user_id, collection="", threshold=70,
         # if not obelix:
         return []
 
+    check_same_title = []
     suggestions = []
     similar_records = _find_similar_records(recid, user_id, collection,
                                             threshold)
@@ -124,17 +125,17 @@ def get_recommended_records(recid, user_id, collection="", threshold=70,
     for sim_recid in similar_records:
         try:
             record = get_record(sim_recid)
-            title = record['title']
-            if title:
-                title = title['title']
-            else:
-                continue
+            title = record.get('title.title', None)
 
-            rec_authors = record.get('authors.full_name')
-            if rec_authors[0] is None and len(rec_authors) <= 1:
-                authors = "; ".join(record.get('corporate_name.name', ""))
+            # Check for similar title
+            if not title or title in check_same_title:
+                continue
             else:
-                authors = "; ".join(record['authors.full_name'])
+                check_same_title.append(title)
+
+            rec_authors = filter(None, record.get('authors.full_name', [])) \
+                or filter(None, record.get('corporate_name.name', []))
+            authors = "; ".join(rec_authors)
         except (KeyError, TypeError, ValueError):
             continue
 
