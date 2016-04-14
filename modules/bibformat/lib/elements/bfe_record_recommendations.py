@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -20,12 +20,11 @@
 """BibFormat element.
 
 * Creates a list of record recommendations
-* Based on Obelix recommendations and word similarity ranking
 """
 
 import re
 
-from invenio.config import CFG_OBELIX_HOST
+from invenio.config import CFG_RECOMMENDER_REDIS
 from invenio.messages import gettext_set_language
 
 
@@ -42,13 +41,9 @@ $( document ).ready(function() {
         }
 
         var header = $( "<div/>", {class: 'recommendation_header'})
-                    .appendTo(root)
+                    .appendTo(root);
         $( "<h3/>", {class: 'recommendations_contents',
             text: "%(text_title)s:" }).appendTo(header);
-        if (data.loggedin === false) {
-            $( "<p/>", {class: 'recommendations_login',
-                text: "%(text_login)s" }).appendTo(header);
-        }
         var list = $( "<ul/>", {
             "class": "record_recommendation",
         });
@@ -87,7 +82,7 @@ $( document ).ready(function() {
 
         });
         $(list).appendTo(root);
-        root.appendTo($("div.pagebodystripemiddle"))
+        root.appendTo($("div.pagebodystripemiddle"));
         $(root).fadeIn("Slow");
     });
 
@@ -98,7 +93,7 @@ $( document ).ready(function() {
 
 def format_element(bfo):
     """Create the HTML and JS code to display the recommended records."""
-    if CFG_OBELIX_HOST == "":
+    if CFG_RECOMMENDER_REDIS == "":
         return ""
     try:
         re.search(r'/record/', bfo.user_info.get('uri')).group()
@@ -110,10 +105,7 @@ def format_element(bfo):
 
     url = "/record/" + str(bfo.recID) + "/recommendations"
     html = html_script % {'recommendations_url': url,
-                          'text_title': _("You might also be interested in"),
-                          'text_login': _(
-                              "Please login for personalized recommendations"),
-                          }
+            'text_title': _("Users who viewed this record also viewed")}
     return html
 
 

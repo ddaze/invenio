@@ -4463,16 +4463,6 @@ a.author_orcid_image_link {
     padding-bottom: 10px;
 }
 
-.recommendations_login {
-    font-style: italic;
-    text-align: right;
-    padding: 0px;
-    color: #444;
-    margin: 0px;
-    display: inline;
-    float: right;
-}
-
 ul.record_recommendation li{
   clear: both;
   color: #444;
