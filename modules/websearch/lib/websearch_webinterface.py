@@ -353,7 +353,17 @@ class WebInterfaceRecordRecommendations(WebInterfaceDirectory):
         result['loggedin'] = True if uid > 0 else False
         result['stat'] = 'ok'
 
-        return json.dumps(result)
+        try:
+            output = json.dumps(result)
+        except UnicodeDecodeError as e:
+            e.level = logging.WARN
+            register_exception(alert_admin=True, prefix="UnicodeDecodeError, "
+                               "Record needs to be fixed")
+            result = {'stat': 'fail', "code": 2,
+                      "message": "UnicodeDecodeError"}
+            output = json.dumps(result)
+
+        return output
 
 
 class WebInterfaceRecordRestrictedPages(WebInterfaceDirectory):
